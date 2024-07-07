@@ -1,0 +1,55 @@
+const mysql = require('mysql2')
+const cors = require('cors')
+const express = require('express');
+const app = express();
+const bcrypt = require('bcrypt');
+let bodyparser = require('body-parser')
+let jsonparser=bodyparser.json();
+app.use(express.json())
+app.use(cors())
+const db=mysql.createPool({
+    host:'localhost',
+    user: 'root',
+    password : '',
+    database: 'project-login',
+}).promise();
+
+app.post('/auth', async (req,res)=>{
+    let username = "test";
+    let password = "asd";
+    const [rows,fields] = db.query('SELECT * FROM `users` WHERE Username= (?)',[username])
+   console.log(rows[1]+""+username)
+    if(bcrypt.compareSync(password,help[1])){
+        console.log("gud")
+    }
+})
+app.get('/test', async (req,res)=>{
+    const [rows,fields]= await db.query('SELECT * FROM `users`')
+    rows.forEach(element => {
+        element[1]
+        
+    });
+    res.send(rows)
+})
+
+app.post('/test',jsonparser, async (req,res)=>{
+    try{
+        let userdata = [req.body.Username, req.body.Password,]
+       const salt = await bcrypt.genSalt(20);
+       let help = await bcrypt.hash(userdata[1],salt)
+
+        const insert = await db.query('INSERT INTO users(Username,Password) VALUES (?,?)',[userdata[0],help]);
+        res.status(201).send("Sikeres a felhasználó felvétele!");
+    }
+    catch (error) {
+        console.error('Error:', error);
+        res.status(500).send('Szerveroldali hiba');
+    }
+})
+
+ 
+ 
+ 
+ 
+app.listen(3000);
+ 
